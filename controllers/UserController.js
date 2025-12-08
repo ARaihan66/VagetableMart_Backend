@@ -108,3 +108,22 @@ export const logInUser = async (req, res) => {
     });
   }
 };
+
+// Log out user
+export const LogOutUser = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+
+    res.json({ success: true, message: "User Log Out" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
