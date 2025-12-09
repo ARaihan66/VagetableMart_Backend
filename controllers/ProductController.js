@@ -31,10 +31,65 @@ export const addProduct = async (req, res) => {
 };
 
 // Get list of products
-export const productList = async (req, res) => {};
+export const productList = async (req, res) => {
+  try {
+    const products = await productById.find({});
+    res.json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Get single product
-export const productById = async (req, res) => {};
+export const productById = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      res.json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+
+    res.json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Change inStock
-export const changeStock = async (req, res) => {};
+export const changeStock = async (req, res) => {
+  try {
+    const { id, inStock } = req.body;
+
+    await Product.findByIdAndUpdate(id, { inStock });
+
+    res.json({
+      success: true,
+      message: "Stock Updated",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
