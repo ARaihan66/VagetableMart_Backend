@@ -8,8 +8,8 @@ export const createUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({
-        status: 400,
+      return res.json({
+        success: false,
         message: "All fields are required",
       });
     }
@@ -17,8 +17,8 @@ export const createUser = async (req, res) => {
     const existedUser = await User.findOne({ email });
 
     if (existedUser) {
-      return res.status(400).json({
-        status: 400,
+      return res.json({
+        success: false,
         message: "User already existed",
       });
     }
@@ -38,27 +38,27 @@ export const createUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({
-      status: 200,
+    return res.json({
+      success: true,
       message: "User created successfully.",
     });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({
-      status: 500,
+    res.json({
+      success: false,
       message: error.message,
     });
   }
 };
 
 // Log in user
-export const logInUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        status: 400,
+      return res.json({
+        success: false,
         message: "All fields are required.",
       });
     }
@@ -66,8 +66,8 @@ export const logInUser = async (req, res) => {
     const existedUser = await User.findOne({ email });
 
     if (!existedUser) {
-      return res.status(404).json({
-        status: 404,
+      return res.json({
+        success: false,
         message: "Invalid email or password.",
       });
     }
@@ -75,8 +75,8 @@ export const logInUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, existedUser.password);
 
     if (!isMatch) {
-      return res.status(404).json({
-        status: 404,
+      return res.json({
+        success: false,
         message: "Invalid email or password.",
       });
     }
@@ -96,21 +96,37 @@ export const logInUser = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({
-      status: 200,
+    return res.json({
+      success: true,
       message: "User login successful.",
     });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({
-      status: 500,
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// User auth
+export const isAuth = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await User.findById(userId).select("-password");
+
+    return res.json({ success: true, user });
+  } catch (error) {
+    console.log(error.message);
+    res.json({
+      success: false,
       message: error.message,
     });
   }
 };
 
 // Log out user
-export const LogOutUser = async (req, res) => {
+export const logoutUser = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
