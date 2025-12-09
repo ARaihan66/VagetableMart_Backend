@@ -5,11 +5,13 @@ import "dotenv/config";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/UserRoute.js";
 import sellerRouter from "./routes/SellerRoute.js";
+import connectCloudinary from "./configs/cloudinary.js";
 
 const app = express();
 const PORT = 8000 || process.env.PORT;
 
 await connectDB();
+await connectCloudinary();
 
 const allowedOrigin = [""];
 // Middleware configuration
